@@ -11,94 +11,115 @@ let books = [
 
 ];
 
-let getStart = (req, res) => {
+//// Get book --> obtener book
 
-    res.send({error: true, codigo: 200, mensaje: "Start here"});
-}
+let getBook = (req ,res) => {
 
-
-let getBooks = (req, res) => {
-
-    res.send(books)
-}
-
-
-let getBookId = (req ,res) => {
-
-    if(req.query.id) {
+    let answer;
 
         for (let i = 0; i< books.length; i++) {
 
-            if(req.query.id == books[i].id_book){
-                res.send(Book)
+            if(req.query.id_book == books[i].id_book){
+                answer = [books[i]];
             } 
-        } 
-    } else {
-        res.send(books);
-    }
+        }
 
+    res.send(answer);
 }
+
+// recoge la request que manda el cliente y nosotras enviamos la respuesta
+
+let getBooks = (req, res) => {
+
+    res.send(books);
+}
+
+
+///    get se hace con req.query
+
+// FUNCION para add book
+
+////         todo lo que no es get se hace con req.body
 
 let postBooks = (req, res) => {
 
-    let book = new Book (
-        
-            req.body.title, 
-            req.body.type, 
-            req.body.author, 
-            req.body.price, 
-            req.body.photo, 
-            req.body.id_book, 
-            req.body.id_user
-    )
-        books.push(book);
+    let answer;
+    let book;
 
-        let answer = "Book has been create successfully"
-        res.send(answer);
+    if (book == null) {
+        let book = new Book (
+        
+                req.body.id_user,
+                req.body.id_book, 
+                req.body.title, 
+                req.body.type, 
+                req.body.author, 
+                req.body.price, 
+                req.body.photo, 
+        )
+        books.push(book);
+        answer = {error: false, codigo: 200, message: "Book has been create successfully"}
+
+    } else {
+        answer = {error: true, codigo: 200, message: "This book already exists"}
+    }
+    res.send(answer)
     
 }
 
 
+
+/////////// FUNCION PARA EDIT BOOK ///////////
+///// put con req.boy. Busco id del libro para 
+
 let putBooks = (req, res) => {
 
     let answer;
+    let change = req.body.id_book; //// change: modifico book
 
-    let id = req.body.id_book;
-    let searchBook = books.find(book => book.id_book == id)
-    if (searchBook =! undefined){
-        searchBook.id_book = req.body.id_book;
-        searchBook.title = req.body.title;
-        searchBook.type = req.body.type;
-        searchBook.author = req.body.author;
-        searchBook.price = req.body.photo;
-        searchBook.photo = req.body.photo;
-        searchBook.id_user = req.body.id_user;
+    for(let i = 0; i < books.length; i++){
 
-        answer = {error: false, codigo: 200, mensaje: "Uploaded correctly"}
+        if (change == books[i].id_book){
+            
+            let book = new Book (
+                req.body.id_user,
+                req.body.id_book, 
+                req.body.title, 
+                req.body.type, 
+                req.body.author, 
+                req.body.price, 
+                req.body.photo, 
+            )
+
+            books.push(book);
+            answer = {error: false, codigo: 200, mensaje: "Uploaded correctly"}
+
     } else {
-
-        answer = {error: true, codigo: 200, mensaje: "This book doesn't exist"}
+            answer = {error: true, codigo: 200, mensaje: "This book doesn't exist"}
+        }
     }
-
     res.send(answer);
 }
+
 
 
 let deleteBooks = (req, res) => {
 
     let answer;
+    let deleteBook = false;
 
     for (let i = 0; books.length; i++) {
         if (req.body.id_book == books[i].id_book) {
-            this.books.splice(i, 1);
-            answer = {error: false, codigo: 200, mensaje: "This book has been deleted correctly"}
-        } else {
-            answer = {error: true, codigo: 200, mensaje: "This book doesn't exist"}
+            books.splice(i, 1);
+            deleteBook = true;
+        answer = {error: false, codigo: 200, mensaje: "This book has been deleted correctly"}
+        }  
+        else {
+            answer = {error: true, codigo: 200, mensaje: "This book doesn't exists"}
         }
-
-        res.send(answer);
     }
+    res.send(answer);
 }
 
 
-module.exports = {getStart, getBooks, getBookId, postBooks, putBooks, deleteBooks}
+module.exports = {getBook, getBooks, postBooks, putBooks, deleteBooks}
